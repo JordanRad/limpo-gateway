@@ -37,7 +37,8 @@ public class AuthFilter implements GatewayFilter {
 
     /**
      * Check if a given url is a protected route (Authentication)
-     * @param route - Route to check (URL)
+     * @param url       route to check
+     * @param method    HTTP request method
      * @return boolean
      */
     private boolean isRouteProtected(String url, HttpMethod method) {
@@ -48,15 +49,16 @@ public class AuthFilter implements GatewayFilter {
             }
         }
         return false;
-
     }
 
     /**
      * Check if authenticated route requires a particular role (Authorisation)
      */
-    private boolean authorise(String role){
+    private boolean authorize(String role){
         return true;
+        // TODO: 24/08/2021 Check if the role is equal to required role  
     }
+
 
     /**
      * Process the Web request and (optionally) delegate to the next {@code WebFilter}
@@ -77,11 +79,9 @@ public class AuthFilter implements GatewayFilter {
 
         if (isRouteProtected(requestUrl,requestMethod)){
             System.out.print(" -> protected");
+            // TODO: 24/08/2021 authorize()
+            // Return respective status or pass to chain.filer(exchange)
         }
-        else{
-            System.out.print(" -> unprotected");
-        }
-
 
         return chain.filter(exchange);
     }
