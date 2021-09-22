@@ -12,16 +12,21 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 
 import java.util.ArrayList;
@@ -32,6 +37,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class GatewayConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -41,20 +47,6 @@ public class GatewayConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtUserDetailsService userDetailService;
 
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // <-- you may change "*"
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Accept", "Origin", "Content-Type", "Depth", "User-Agent", "If-Modified-Since,",
-                "Cache-Control", "Authorization", "X-Req", "X-File-Size", "X-Requested-With", "X-File-Name"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -70,14 +62,15 @@ public class GatewayConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http.csrf().disable().cors().and()
                 .authorizeRequests()
-                //.antMatchers("/api/v1/order-service/orders","/order-service/api/orders/getAll").access("hasRole('ADMIN')")
-                //.antMatchers("/api/v1/auth-service/**").permitAll()
-                //.antMatchers(HttpMethod.POST,"/api/v1/auth-service/**").permitAll()
-                .antMatchers("/api/**").permitAll()
-                .anyRequest()
-                .authenticated()
+                .antMatchers("order-service/api/v1/orders").access("hasRole('ADMIN')")
+                .antMatchers("/api/v1/order-service/clients/*","/api/v1/order-service/limpoUnits/*").permitAll()
+                .antMatchers(HttpMethod.PUT,"/api/v1/order-service/clients/*").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/v1/order-service/limpoUnits/*").permitAll()
+                .antMatchers("/auth-service/api/**").permitAll()
+                .antMatchers("/os/api/**").permitAll()
                 .and()
                 .exceptionHandling()
                 .and()

@@ -22,11 +22,7 @@ public class User implements UserDetails {
 
     private String password;
 
-
-
-
     private String role;
-
 
 
     public User() {
