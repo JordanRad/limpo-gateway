@@ -6,10 +6,9 @@ import org.springframework.http.HttpMethod;
 
 @Data
 @AllArgsConstructor
-public class ProtectedRoute {
+public class WhitelistedRoute {
+
     private String urlMatcher;
 
-    private HttpMethod method;
-
-    private String[] requiredRoles;
+    private String method;
 }
