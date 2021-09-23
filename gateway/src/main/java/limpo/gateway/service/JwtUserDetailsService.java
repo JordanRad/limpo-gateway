@@ -1,8 +1,7 @@
 package limpo.gateway.service;
 
-import limpo.gateway.dto.AuthorizedDto;
-import limpo.gateway.dto.User;
-import limpo.gateway.filter.AuthFilter;
+import limpo.gateway.model.AuthorizedDto;
+import limpo.gateway.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

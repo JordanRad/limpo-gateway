@@ -1,4 +1,4 @@
-package limpo.gateway.dto;
+package limpo.gateway.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import limpo.gateway.util.CustomAuthorityDeserializer;

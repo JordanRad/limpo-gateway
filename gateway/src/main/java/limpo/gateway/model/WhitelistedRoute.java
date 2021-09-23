@@ -1,8 +1,7 @@
-package limpo.gateway.dto;
+package limpo.gateway.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.http.HttpMethod;
 
 @Data
 @AllArgsConstructor

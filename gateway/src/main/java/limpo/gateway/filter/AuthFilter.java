@@ -1,14 +1,9 @@
 package limpo.gateway.filter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import limpo.gateway.dto.WhitelistedRoute;
+import limpo.gateway.model.WhitelistedRoute;
 import limpo.gateway.service.JwtUserDetailsService;
 import limpo.gateway.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,7 +43,8 @@ public class AuthFilter extends OncePerRequestFilter {
 
     /**
      * This method checks if a route is whitelisted
-     * @param url request url
+     *
+     * @param url    request url
      * @param method request method
      * @return boolean
      */
@@ -86,42 +82,44 @@ public class AuthFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
 
 
-        if(authorizationHeader != null) {
+        if (authorizationHeader != null) {
             String token = null;
             String email = null;
 
             if (authorizationHeader.startsWith("Bearer ")) {
                 token = authorizationHeader.substring(7);
-                email = jwtUtil.extractEmail(token);
+                try {
+                    email = jwtUtil.extractEmail(token);
+                }catch(Exception e){
+                    response.sendError(401);
+                }
             }
+            
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (email == null) {
-                response.setStatus(401);
-            } else {
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = service.loadUserByUsername(email);
 
-                    UserDetails userDetails = service.loadUserByUsername(email);
+                if (jwtUtil.validateToken(token, userDetails)) {
 
-                    if (jwtUtil.validateToken(token, userDetails)) {
-
-                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        usernamePasswordAuthenticationToken
-                                .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    }
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
 
             }
-        }else{
-            // If there is no token, check if the route is whitelisted
-            String requestURI = request.getRequestURI();
-            String requestMethod = request.getMethod();
-            if(!checkRoute(requestURI,requestMethod)){
-                response.sendError(401);
-            }
 
         }
+//        else{
+//            // If there is no token, check if the route is whitelisted
+//            String requestURI = request.getRequestURI();
+//            String requestMethod = request.getMethod();
+//            if(!checkRoute(requestURI,requestMethod)){
+//                response.sendError(401);
+//            }
+//
+//        }
         filterChain.doFilter(request, response);
     }
 }

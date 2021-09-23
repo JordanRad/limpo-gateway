@@ -48,8 +48,6 @@ public class JwtUtil {
 
     public String generateToken(String email) {
         Map<String, Object> claims = new HashMap<>();
-        //String userRole = repository.findByEmail(email).getRole();
-        //claims.put("role",userRole);
         return createToken(claims, email);
     }
 
