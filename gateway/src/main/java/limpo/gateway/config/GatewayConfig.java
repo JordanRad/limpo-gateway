@@ -49,12 +49,20 @@ public class GatewayConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable().cors().and()
                 .authorizeRequests()
-                .antMatchers("order-service/api/v1/orders").access("hasRole('ADMIN')")
-                .antMatchers("/api/v1/order-service/clients/*","/api/v1/order-service/limpoUnits/*").permitAll()
-                .antMatchers(HttpMethod.PUT,"/api/v1/order-service/clients/*").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/v1/order-service/limpoUnits/*").permitAll()
-                .antMatchers("/auth-service/api/**").permitAll()
-                .antMatchers("/os/api/**").permitAll()
+                // Blacklisted routes
+                .antMatchers("/order-service/api/v1/orders/*").access("hasRole('ADMIN')")
+                .antMatchers(HttpMethod.POST, "/order-service/api/v1/limpoUnits/*").access("hasRole('ADMIN')")
+                .antMatchers(HttpMethod.DELETE, "/order-service/api/v1/limpoUnits/*").access("hasRole('ADMIN')")
+                .antMatchers(HttpMethod.GET, "/order-service/api/v1/clients/*").access("hasRole('ADMIN')")
+                .antMatchers(HttpMethod.PUT, "/order-service/api/v1/clients/*").access("hasRole('ADMIN')")
+                .antMatchers(HttpMethod.DELETE, "/order-service/api/v1/clients/*").access("hasRole('ADMIN')")
+
+                // Whitelisted routes
+                .antMatchers("/auth-service/api/v1/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/order-service/api/v1/clients").permitAll()
+                .antMatchers(HttpMethod.GET, "/order-service/api/v1/limpoUnits").permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .exceptionHandling()
                 .and()

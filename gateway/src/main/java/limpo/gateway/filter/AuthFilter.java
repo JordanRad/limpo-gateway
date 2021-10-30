@@ -94,7 +94,7 @@ public class AuthFilter extends OncePerRequestFilter {
                     response.sendError(401);
                 }
             }
-            
+
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = service.loadUserByUsername(email);
