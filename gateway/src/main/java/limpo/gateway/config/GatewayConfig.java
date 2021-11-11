@@ -71,5 +71,4 @@ public class GatewayConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }
 
-
 }

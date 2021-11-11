@@ -28,35 +28,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUserDetailsService service;
-
-    /**
-     * This method constructs list of unprotected routes
-     *
-     * @return whitelist List<String>
-     */
-    private List<WhitelistedRoute> getWhitelistedRoutes() {
-        List<WhitelistedRoute> whitelist = new ArrayList<>();
-        whitelist.add(new WhitelistedRoute("/order-service/api/v1/limpoUnits/", "GET"));
-        whitelist.add(new WhitelistedRoute("/order-service/api/v1/orders/", "POST"));
-        return whitelist;
-    }
-
-    /**
-     * This method checks if a route is whitelisted
-     *
-     * @param url    request url
-     * @param method request method
-     * @return boolean
-     */
-    private boolean checkRoute(String url, String method) {
-        for (WhitelistedRoute route : getWhitelistedRoutes()) {
-            if (url.contains(route.getUrlMatcher()) && route.getMethod().equals(method)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    
 
     /**
      * Same contract as for {@code doFilter}, but guaranteed to be
