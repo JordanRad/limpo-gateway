@@ -28,7 +28,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUserDetailsService service;
-    
+
 
     /**
      * Same contract as for {@code doFilter}, but guaranteed to be
